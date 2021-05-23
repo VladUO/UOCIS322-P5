@@ -187,23 +187,24 @@
                      function(e)
                      {
                         e.preventDefault();
-                        // console.log($('input[name="km"]'));
+                        var SubmitData = [];
                         $('.control').each
                         (
                            function(index, obj)
                            {
-                              // console.log(index, $(obj).find("input[name='km']").val())
                               if(index, $(obj).find("input[name='km']").val() != "")
                               { 
-                                 console.log(index, 
-                                    $(obj).find("input[name='km']").val(),
-                                    $(obj).find("input[name='open']").val(),
-                                    $(obj).find("input[name='close']").val());
+                                 SubmitData.push("index " + index, $(obj).find("input[name='miles']").val(),
+                                                        $(obj).find("input[name='km']").val(), 
+                                                        $(obj).find("input[name='location']").val(), 
+                                                        $(obj).find("input[name='open']").val(), 
+                                                        $(obj).find("input[name='close']").val());
+                                 console.log(SubmitData);
                               }      
                            }
                         );
 
-                        $.post("/displayroute", {data: data}, function(response){console.log("response: ", response)}, "json");
+                        $.post("/submitroute", {SubmitData: SubmitData}, function(response){console.log("response: ", response)}, "json");
                         // Collect all the non-empty fields, send to /someroute
                      }
                   );  

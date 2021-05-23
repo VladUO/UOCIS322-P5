@@ -29,7 +29,7 @@ def index():
     app.logger.debug("Main page entry")
     return flask.render_template('calc.html')
 
-@app.route("/displayroute")
+@app.route("/submitroute")
 def display():
     return flask.render_template('display.html') #make a template for display
 
