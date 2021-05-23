@@ -38,8 +38,7 @@ def page_not_found(error):
 @app.route("/submitroute", methods = ["POST"])
 def submit():
     app.logger.debug("Got a POST request")
-    SubmitData = request.form.get("SubmitData")
-    # SubmitData = json.loads(request.args.get("SubmitData")) //tried this among other things
+    SubmitData = json.loads(request.form.get("SubmitData")) #tried this among other things
     print(SubmitData)
     # for item in SubmitData:
     #     print(item)
@@ -49,6 +48,8 @@ def submit():
 @app.route("/displayroute", methods = ["GET"])
 def display():
     return flask.render_template('display.html') #make a template for display
+
+
 ###############
 #
 # AJAX request handlers

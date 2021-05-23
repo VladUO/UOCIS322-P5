@@ -194,7 +194,8 @@
                            {
                               if(index, $(obj).find("input[name='km']").val() != "")            //checking if an entry is not empty
                               { 
-                                 SubmitData.push("index " + index, $(obj).find("input[name='miles']").val(), //if it isnt we add all the values to the array
+                                 //if it isnt we add all the values to the array
+                                 SubmitData.push(index, $(obj).find("input[name='miles']").val(), 
                                                         $(obj).find("input[name='km']").val(), 
                                                         $(obj).find("input[name='location']").val(), 
                                                         $(obj).find("input[name='open']").val(), 
@@ -203,10 +204,11 @@
                               }      
                            }
                         );
-                        //sending a post request to flask_brevets     
                         console.log(SubmitData);
-
-                        $.post("/submitroute", {SubmitData: SubmitData}, function(response){console.log("response: ", response)}, "json"); 
+                        console.log(JSON.stringify(SubmitData));
+                        
+                        //sending a post request to flask_brevets     
+                        $.post("/submitroute", {SubmitData: JSON.stringify(SubmitData)}, function(response){console.log("response: ", response)}, "json"); 
                         }
                   );  
 
