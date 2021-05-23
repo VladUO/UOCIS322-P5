@@ -187,26 +187,27 @@
                      function(e)
                      {
                         e.preventDefault();
-                        var SubmitData = [];
-                        $('.control').each
+                        var SubmitData = [];  //creating a new array for the data
+                        $('.control').each    //looping through all the entries in the control
                         (
                            function(index, obj)
                            {
-                              if(index, $(obj).find("input[name='km']").val() != "")
+                              if(index, $(obj).find("input[name='km']").val() != "")            //checking if an entry is not empty
                               { 
-                                 SubmitData.push("index " + index, $(obj).find("input[name='miles']").val(),
+                                 SubmitData.push("index " + index, $(obj).find("input[name='miles']").val(), //if it isnt we add all the values to the array
                                                         $(obj).find("input[name='km']").val(), 
                                                         $(obj).find("input[name='location']").val(), 
                                                         $(obj).find("input[name='open']").val(), 
                                                         $(obj).find("input[name='close']").val());
-                                 console.log(SubmitData);
+                                 // console.log(SubmitData);  //checking to see if its working
                               }      
                            }
                         );
+                        //sending a post request to flask_brevets     
+                        console.log(SubmitData);
 
-                        $.post("/submitroute", {SubmitData: SubmitData}, function(response){console.log("response: ", response)}, "json");
-                        // Collect all the non-empty fields, send to /someroute
-                     }
+                        $.post("/submitroute", {SubmitData: SubmitData}, function(response){console.log("response: ", response)}, "json"); 
+                        }
                   );  
 
                   $('#display').click

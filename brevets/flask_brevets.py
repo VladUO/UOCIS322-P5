@@ -9,6 +9,7 @@ from flask import request
 import arrow  # Replacement for datetime, based on moment.js
 import acp_times  # Brevet time calculations
 import config
+import json
 
 import logging
 
@@ -29,16 +30,25 @@ def index():
     app.logger.debug("Main page entry")
     return flask.render_template('calc.html')
 
-@app.route("/submitroute")
-def display():
-    return flask.render_template('display.html') #make a template for display
-
 @app.errorhandler(404)
 def page_not_found(error):
     app.logger.debug("Page not found")
     return flask.render_template('404.html'), 404
 
+@app.route("/submitroute", methods = ["POST"])
+def submit():
+    app.logger.debug("Got a POST request")
+    SubmitData = request.form.get("SubmitData")
+    # SubmitData = json.loads(request.args.get("SubmitData")) //tried this among other things
+    print(SubmitData)
+    # for item in SubmitData:
+    #     print(item)
+    return "SUCCESS"
+    
 
+@app.route("/displayroute", methods = ["GET"])
+def display():
+    return flask.render_template('display.html') #make a template for display
 ###############
 #
 # AJAX request handlers
