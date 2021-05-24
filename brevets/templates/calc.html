@@ -73,6 +73,7 @@
                <!-- columns 5 to 10 -->
             </div>
             <!-- row -->
+            <p id="message"> </p>
             <br />  <!-- a little vertical space -->
             <!-- Although we do not use tables for general page layout, they are
                appropriate for something that really is a table, like this
@@ -216,8 +217,9 @@
                         $.post("/submitroute", {SubmitData: JSON.stringify(SubmitData), 
                                                 brevet_dist_km: brevet_dist_km, 
                                                 brevet_start_time: brevet_start_time},
-                                                function(response){console.log("response: ", response)}, "json"); 
+                                                function(response){$("#message").html(response)}, "json" ); 
                         }
+                        
                   );  
 
                   $('#display').click

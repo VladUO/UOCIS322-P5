@@ -46,21 +46,23 @@ def submit():
 
     brevet_start_time = request.form.get('brevet_start_time', arrow.now(), type=str)  #getting the brevit start time from the html                   
     # app.logger.debug("Brevet start time: ", brevet_start_time) 
-
     SubmitData = json.loads(request.form.get("SubmitData")) 
+    if SubmitData:
+        message = '<h3>Successfully submitted your data to the database!</h3>'
+    else:
+        message = '<h3>There are no control times to submit to the database!</h3>'    
     # app.logger.debug(SubmitData)
     db.database.drop()
     db.database.insert({'BrevetDistance': brevet_dist_km, 'StartTime': brevet_start_time})
     for item in SubmitData:
         db.database.insert_one(item)
-    return "SUCCESS"
+    return flask.jsonify(message)
     
 
 @app.route("/displayroute", methods = ["GET"])
 def display():
-    # return redirect(url_for('index'))
     return render_template('display.html', items=list(db.database.find()))
- #make a template for display
+
 
 
 ###############
