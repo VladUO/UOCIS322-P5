@@ -1,8 +1,19 @@
 from acp_times import open_time, close_time
 
+import os 
 import logging
 import nose
 import arrow
+import flask
+from flask import Flask
+import config
+from pymongo import MongoClient
+
+app = flask.Flask(__name__)
+
+client = MongoClient('mongodb://' + os.environ['MONGODB_HOSTNAME'], 27017)
+db = client.database
+
 
 logging.basicConfig(format='%(levelname)s:%(message)s',
                     level=logging.WARNING)
@@ -10,6 +21,18 @@ log = logging.getLogger(__name__)
 
 time = arrow.get("2021-01-01T01:01", 'YYYY-MM-DDTHH:mm')
 
+def test_db():
+    db.database.drop()
+    db.database.insert({'BrevetDistance': 200, 'StartTime': "08:06"}) 
+    print(list(db.database.find_one()))
+    assert list(db.database.find_one()) == ['_id', 'BrevetDistance', 'StartTime']
+
+    db.database.drop()
+    db.database.insert({'BrevetDistance': '200', 'StartTime': "08:06"}) 
+    db.database.insert({'BrevetDistance': '300', 'StartTime': "12:04"}) 
+    print(list(db.database.find_one({'BrevetDistance': "300"})))
+    assert list(db.database.find_one()) == ['_id', 'BrevetDistance', 'StartTime']
+    
 def test_200():
     assert open_time(0, 200, time) == arrow.get('2021-01-01T01:01', 'YYYY-MM-DDTHH:mm')
     assert close_time(0, 200, time) == arrow.get('2021-01-01T02:01', 'YYYY-MM-DDTHH:mm')
@@ -91,3 +114,4 @@ def test_1000():
 
     assert open_time(1000, 1000, time) == arrow.get('2021-01-02T10:06', 'YYYY-MM-DDTHH:mm')
     assert close_time(1000, 1000, time) == arrow.get('2021-01-04T04:01', 'YYYY-MM-DDTHH:mm')        
+

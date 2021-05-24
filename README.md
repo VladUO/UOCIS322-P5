@@ -1,82 +1,27 @@
 # UOCIS322 - Project 5 #
 Brevet time calculator with AJAX and MongoDB!
 
-## Overview
+Author: Vladimir Shatalov
+Address: vvs@uoregon.edu
 
-Store control times from Project 4 in a MongoDB database.
 
-### What is in this repository
 
-You have a minimal example of `docker-compose` in `DockerMongo`, using which you can connect a Flask app to MongoDB (as demonstrated in class). Refer to the lecture slides for more details on MongoDB and `docker-compose`. Solved `acp_times.py` file will be made available on Canvas under Files after the project due date.
+This is a program for calculating checkpoint open and close times for brevets (bicycle races) of various lengths. The new (updated) version stores the checkpoint data in a database to be retrieved at your convenience. 
 
-## IMPORTANT NOTES
+The new version of the program adds two buttons: Submit and Display. Once you have entered some values for your brevet control checkpoints, you can hit submit and those values, as well as the calculated open/close times,
+are collected into an array of dictionaries. That array then gets “stringified” using JSON and sent to flask_brevets.py, where it gets and added to a MongoDB database. If this operation was successful a message is returned to the HTML page to inform the user that the data has been submitted to the database. If there were no checkpoints entered before hitting the submit button, the message will inform the user that there was no data to submit. I decided to send the brevet distance and start time values separately, as well as adding them to the database separately.
 
-**MAKE SURE TO USE THE SOLUTION `acp_times.py` from Canvas for this project!**
+Once the data is in the database, if the user hits the display button, they will be taken to a new html page where all the data from the database will be displayed for them using Jinja. The brevet start time and distance are displayed first, then each row independently. There is currently no error handling for trying to display an empty database so you will simply be taken to an empty page.
 
-**MAKE SURE TO KEEP YOUR FILES in `brevets`! REMOVE `DockerMongo` after you're done!**
 
-## Getting started
+There are a total of 5 possible lengths of brevets, they are: 200, 300, 400, 600 and 1000km. The rules for setting checkpoints and calculating their open and close times are described here https://rusa.org/pages/acp-brevet-control-times-calculator 
 
-You will reuse *your* code from Project 4 (and the solution `acp_times.py` file for consistency), meaning you will get rid of `DockerMongo` (it's just an example, like `minijax` in Project 3), and use ideas from it to make some changes.
+The program uses an HTML page to take in your input in the form of your chosen brevet length, starting date/time for the race, and the checkpoint/control distance. Once your checkpoint/control distance is entered, a JSON request is sent to “flask_brevets.py” with those three pieces of data. There it is formatted and sent to two separate functions in acp_times.py, “open_time” and “close_time”, the functions calculate the open and close times for this checkpoint/control location…
 
-Recall that you created a list of open and close control times using AJAX. In this project, you will add the following:
+Within those two functions are some special cases: a bias for checkpoints set within the first 60km, every brevet length has a set closing time that is not calculated, and the checkpoints are allowed up to 20% over brevet distance but their open and closing times do not change past those set closing times. 
 
-1. Add two buttons `Submit` and `Display` in the ACP calculator page.
+The current design of “acp_times.py” functions deals with the special cases using separate if statements. All the other cases are calculated by taking the high and the low values for a given brevet “bracket”, and if the checkpoint falls in between those values or within 120% of the high value, the low value is subtracted from the checkpoint distance and divided by the speed for that brevet bracket. This produces the time for that stretch of the race which is added to the total time. Then the remaining checkpoint distance is automatically within the next bracket down and the process repeats until its 0. At that point the total time is rounded and the opening/closing time is shifted by that amount in minutes.
 
-2. Upon clicking the `Submit` button, the control times should be inserted into a MongoDB database.
+In simple terms the method I have chosen the method of “chopping down” the distance, starting from the top and going down through all the brevet “brackets” to calculate the individual times for that stretch of the race based on the speeds allowed on that stretch. Once all those times are added up you get your minimum and maximum allowed times for the given checkpoint and those values are used to shift the starting time and get the output.  
 
-3. Upon clicking the `Display` button, the entries from the database should be displayed in a new page.
 
-Handle error cases appropriately. For example, Submit should return an error if no control times are input. One can imagine many such cases: you'll come up with as many cases as possible.
-
-## Tasks
-
-As always you'll turn in your `credentials.ini` using Canvas, which will point to your repository on GitHub, which should contain:
-
-* `Dockerfile`
-
-* `docker-compose.yml`
-
-* The working application.
-
-* A README.md file that includes not only identifying information (your name) but but also a revised, clear specification of the brevet control time calculation rules (you were supposed to do this for Project 4), with additional information regarding this project.
-
-* An automated `nose` test suite with at least 2 test cases: at least one for the time calculator, and another for DB insertion and retrieval.
-
-## Grading Rubric
-
-* If your code works as expected: 100 points. This includes:
-	* Front-end implementation (`Submit` and `Display`).
-	
-	* Back-end implementation (Connecting to MongoDB, insertion and selection).
-	
-	* AJAX interaction between the frontend and backend (AJAX for `Submit` and `Display`).
-	
-	* Updating `README` with a clear specification (including details from Project 4).
-	
-	* Writing at least 2 correct tests using nose (put them in `tests`, follow Project 3 if necessary), and all should pass.
-
-* If the AJAX logic is not working, **10** points will be docked off. 
-
-* If the logic to insert into or retrieve from the database is wrong, **30** points will be docked off.
-
-* If the README is not clear or missing, up to **15** points will be docked off. 
-
-* If any of the two test cases are incorrect or fail, up to **15** points will be docked off. 
-
-* If none of the functionalities work, 30 points will be given assuming 
-    * The `credentials.ini` is submitted with the correct URL of your repo, and
-    * `Dockerfile` is present 
-    * `docker-compose.yml` works/builds without any errors 
-
-* If none of the functionalities work, 30 points will be given assuming `credentials.ini` is submitted with the correct URL of your repo, `Dockerfile` builds and runs without any errors, and `docker-compose.yml` is correct and works.
-
-* If `docker-compose.yml` is missing, doesn't build or doesn't run, 10 points will be docked off.
-    
-* If `Dockerfile` is missing, doesn't build or doesn't run, 10 points will be docked off.
-	
-* If `credentials.ini` is not submitted or the repo is not found, 0 will be assigned.
-
-## Credits
-
-Michal Young, Ram Durairajan, Steven Walton, Joe Istas.
