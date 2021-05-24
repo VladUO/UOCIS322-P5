@@ -187,7 +187,10 @@
                      function(e)
                      {
                         e.preventDefault();
+                        var brevet_dist_km = $("#brevet_dist_km").val();
+                        var brevet_start_time = $("#begin_date").val();
                         var SubmitData = [];  //creating a new array for the data
+                        var row = {};
                         $('.control').each    //looping through all the entries in the control
                         (
                            function(index, obj)
@@ -195,20 +198,25 @@
                               if(index, $(obj).find("input[name='km']").val() != "")            //checking if an entry is not empty
                               { 
                                  //if it isnt we add all the values to the array
-                                 SubmitData.push(index, $(obj).find("input[name='miles']").val(), 
-                                                        $(obj).find("input[name='km']").val(), 
-                                                        $(obj).find("input[name='location']").val(), 
-                                                        $(obj).find("input[name='open']").val(), 
-                                                        $(obj).find("input[name='close']").val());
+                                 row = {}
+                                 row.Miles =    $(obj).find("input[name='miles']").val(), 
+                                 row.Km =       $(obj).find("input[name='km']").val(), 
+                                 row.Location = $(obj).find("input[name='location']").val(), 
+                                 row.Open =     $(obj).find("input[name='open']").val(), 
+                                 row.Close =    $(obj).find("input[name='close']").val();
+                                 SubmitData.push(row); 
                                  // console.log(SubmitData);  //checking to see if its working
-                              }      
+                              } 
                            }
                         );
                         console.log(SubmitData);
                         console.log(JSON.stringify(SubmitData));
                         
                         //sending a post request to flask_brevets     
-                        $.post("/submitroute", {SubmitData: JSON.stringify(SubmitData)}, function(response){console.log("response: ", response)}, "json"); 
+                        $.post("/submitroute", {SubmitData: JSON.stringify(SubmitData), 
+                                                brevet_dist_km: brevet_dist_km, 
+                                                brevet_start_time: brevet_start_time},
+                                                function(response){console.log("response: ", response)}, "json"); 
                         }
                   );  
 
@@ -217,6 +225,8 @@
                      function(e)
                      {
                         e.preventDefault();
+                        // $.getJSON( "/displayroute")
+                        window.location.replace("/displayroute")
                         //redirect to displayroute
                      }
                   ); 

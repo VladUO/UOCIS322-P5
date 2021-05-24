@@ -1,0 +1,22 @@
+<html>
+    <head>
+        <title>Blog!</title>
+    </head>
+    <body>
+        <div>
+            <h3>Brevet distance: {{ items[0].BrevetDistance}} km</h3> 
+            <h3>Brevet start time: {{ items[0].StartTime }}</h3>
+            {% for i in range(1, items|length) %}
+            <div>
+                <p>Miles: {{ items[i].Miles }}
+                   Kilometers: {{ items[i].Km }}
+                   Location: {{ items[i].Location}}
+                   Open time: {{ items[i].Open}}
+                   Close time: {{ items[i].Close}} 
+                </p>
+            </div>
+            
+            {% endfor %}
+        </div>
+    </body>
+</html>

@@ -3,15 +3,16 @@ Replacement for RUSA ACP brevet time calculator
 (see https://rusa.org/octime_acp.html)
 
 """
-
+import os
 import flask
-from flask import request
+from flask import Flask, redirect, url_for, request, render_template
 import arrow  # Replacement for datetime, based on moment.js
 import acp_times  # Brevet time calculations
 import config
 import json
 
 import logging
+from pymongo import MongoClient
 
 ###
 # Globals
@@ -19,6 +20,8 @@ import logging
 app = flask.Flask(__name__)
 CONFIG = config.configuration()
 
+client = MongoClient('mongodb://' + os.environ['MONGODB_HOSTNAME'], 27017)
+db = client.database
 ###
 # Pages
 ###
@@ -38,16 +41,26 @@ def page_not_found(error):
 @app.route("/submitroute", methods = ["POST"])
 def submit():
     app.logger.debug("Got a POST request")
-    SubmitData = json.loads(request.form.get("SubmitData")) #tried this among other things
-    print(SubmitData)
-    # for item in SubmitData:
-    #     print(item)
+    brevet_dist_km = request.form.get('brevet_dist_km', 1000, type=float)             #getting the brevit distance from the html
+    # app.logger.debug("Brevet distance: ", brevet_dist_km)                                        #printing it out to make sure its right              
+
+    brevet_start_time = request.form.get('brevet_start_time', arrow.now(), type=str)  #getting the brevit start time from the html                   
+    # app.logger.debug("Brevet start time: ", brevet_start_time) 
+
+    SubmitData = json.loads(request.form.get("SubmitData")) 
+    # app.logger.debug(SubmitData)
+    db.database.drop()
+    db.database.insert({'BrevetDistance': brevet_dist_km, 'StartTime': brevet_start_time})
+    for item in SubmitData:
+        db.database.insert_one(item)
     return "SUCCESS"
     
 
 @app.route("/displayroute", methods = ["GET"])
 def display():
-    return flask.render_template('display.html') #make a template for display
+    # return redirect(url_for('index'))
+    return render_template('display.html', items=list(db.database.find()))
+ #make a template for display
 
 
 ###############
